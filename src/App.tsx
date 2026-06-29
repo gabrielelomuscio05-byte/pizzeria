@@ -191,6 +191,23 @@ const MENU_DATA: Record<string, Array<{ name: string; price: string; description
   ]
 };
 
+const renderProtectedText = (text: string) => {
+  if (!text.toLowerCase().includes('virgo')) return text;
+  
+  const parts = text.split(/(virgo)/i);
+  return (
+    <>
+      {parts.map((part, i) => 
+        part.toLowerCase() === 'virgo' ? (
+          <span key={i} translate="no" className="notranslate">{part}</span>
+        ) : (
+          part
+        )
+      )}
+    </>
+  );
+};
+
 function App() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -435,12 +452,15 @@ function App() {
       <div className="flex flex-col lg:flex-row items-center gap-12">
         {/* Left Column: Text */}
         <div className="lg:w-1/2 flex flex-col items-start text-left">
+          <p className="text-[#C5A059] text-xs sm:text-sm uppercase tracking-[0.25em] font-medium mb-4">
+            La Nostra Filosofia
+          </p>
           <h2 className="font-anton text-[#F5F2EB] text-5xl sm:text-7xl uppercase mb-6 tracking-tight leading-none">
-            L'Arte della Pizza a Virgo
+            L'Arte della Pizza a <span translate="no" className="notranslate">Virgo</span>
           </h2>
           <div className="w-20 h-1 rounded-full mb-8" style={{ backgroundColor: '#C5A059' }} />
           <p className="text-[#F5F2EB] text-lg sm:text-xl leading-relaxed opacity-90 mb-10 font-light">
-            Uniamo l'innovazione del design 3D alla sacralità della tradizione gastronomica italiana. A Virgo, ogni pizza è una scultura di sapori bilanciati, realizzata con un impasto a lievitazione naturale di 48 ore e cotta nel nostro forno a legna.
+            Uniamo l'innovazione del design 3D alla sacralità della tradizione gastronomica italiana. A <span translate="no" className="notranslate">Virgo</span>, ogni pizza è una scultura di sapori bilanciati, realizzata con un impasto a lievitazione naturale di 48 ore e cotta nel nostro forno a legna.
           </p>
           <button
             onClick={() => {
@@ -510,24 +530,24 @@ function App() {
     return (
       <div className="max-w-6xl mx-auto w-full py-12 animate-fade-in px-6">
         <div className="text-center mb-10">
-          <h2 className="font-anton text-[#F5F2EB] text-4xl sm:text-6xl uppercase tracking-tight mb-2">
-            Il Nostro Menu
-          </h2>
-          <p className="text-[#F5F2EB]/70 text-sm sm:text-base uppercase tracking-widest text-center">
+          <p className="text-[#C5A059] text-xs sm:text-sm uppercase tracking-[0.25em] font-medium mb-3">
             Autenticità & Ricerca
           </p>
+          <h2 className="font-anton text-[#F5F2EB] text-4xl sm:text-6xl uppercase tracking-tight">
+            Il Nostro Menu
+          </h2>
         </div>
 
-        {/* Tabs navigation */}
-        <div className="flex flex-wrap justify-center gap-2 mb-12 border-b border-[#F5F2EB]/10 pb-6">
+        {/* Underline tabs — horizontal scroll on mobile */}
+        <div className="flex overflow-x-auto justify-start md:justify-center hide-scrollbar border-b border-white/10 mb-10 gap-0 -mx-6 px-6">
           {categories.map((cat) => (
             <button
               key={cat.id}
               onClick={() => setActiveMenuCategory(cat.id)}
-              className={`px-5 py-2.5 rounded-full text-sm font-bold uppercase transition-all cursor-pointer border-2 border-black ${
+              className={`px-4 sm:px-6 py-3.5 text-xs sm:text-sm font-bold uppercase whitespace-nowrap transition-all duration-200 cursor-pointer border-b-2 -mb-[1px] shrink-0 ${
                 activeMenuCategory === cat.id
-                  ? 'bg-[#9E2A2B] text-[#F5F2EB] shadow-lg'
-                  : 'text-[#F5F2EB] hover:text-[#9E2A2B] hover:bg-[#9E2A2B]/10 bg-white/5'
+                  ? 'border-[#C5A059] text-[#C5A059]'
+                  : 'border-transparent text-[#F5F2EB]/50 hover:text-[#F5F2EB] hover:border-white/20'
               }`}
             >
               {cat.label}
@@ -535,35 +555,46 @@ function App() {
           ))}
         </div>
 
-        {/* Menu items grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Menu items grid with stagger */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {MENU_DATA[activeMenuCategory]?.map((item, idx) => (
             <div
-              key={idx}
+              key={`${activeMenuCategory}-${idx}`}
               onClick={() => {
                 if (item.name === 'Margherita') {
                   setCurrentPage('margherita');
                 }
               }}
-              className="bg-[#181818] border border-white/10 rounded-2xl overflow-hidden flex flex-col hover:border-[#C5A059]/30 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 cursor-pointer select-none group shadow-lg"
+              className="animate-slide-up bg-[#181818] border border-white/10 rounded-2xl overflow-hidden flex flex-col hover:border-[#C5A059]/30 hover:-translate-y-1 hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)] active:scale-[0.98] transition-all duration-300 cursor-pointer select-none group shadow-md"
+              style={{ animationDelay: `${idx * 55}ms` }}
             >
               {/* Product Image */}
-              <div className="w-full aspect-[4/3] overflow-hidden">
+              <div className="w-full aspect-[4/3] overflow-hidden relative">
                 <img
                   src={item.image}
                   alt={item.name}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   draggable={false}
                 />
+                {item.name === 'Margherita' && (
+                  <span className="absolute top-3 right-3 bg-[#C5A059] text-[#1C1C1C] text-[10px] font-bold uppercase px-2.5 py-1 rounded-full tracking-wider shadow-md">
+                    Bestseller
+                  </span>
+                )}
+                {item.name === 'Virgo Speciale' && (
+                  <span className="absolute top-3 right-3 bg-[#9E2A2B] text-white text-[10px] font-bold uppercase px-2.5 py-1 rounded-full tracking-wider shadow-md">
+                    Chef's pick
+                  </span>
+                )}
               </div>
 
               {/* Product Info */}
               <div className="p-4 sm:p-5 flex flex-col justify-center flex-grow text-left">
-                <div className="flex items-baseline justify-between gap-3">
-                  <h3 className="font-bold text-[#F5F2EB] text-base sm:text-lg group-hover:text-[#C5A059] transition-colors">
-                    {item.name}
+                <div className="flex items-start justify-between gap-3">
+                  <h3 className="font-bold text-[#F5F2EB] text-base sm:text-lg leading-tight group-hover:text-[#C5A059] transition-colors duration-200">
+                    {renderProtectedText(item.name)}
                   </h3>
-                  <span className="text-[#C5A059] font-anton text-sm sm:text-base whitespace-nowrap">
+                  <span className="text-[#C5A059] font-anton text-sm sm:text-base whitespace-nowrap shrink-0 mt-0.5">
                     {item.price}
                   </span>
                 </div>
@@ -578,22 +609,22 @@ function App() {
   const ChiSiamoView = () => (
     <div className="max-w-4xl mx-auto w-full py-12 animate-fade-in px-6">
       <div className="text-center mb-12">
-        <h2 className="font-anton text-[#F5F2EB] text-4xl sm:text-6xl uppercase tracking-tight mb-2">
-          Chi Siamo
-        </h2>
-        <p className="text-[#F5F2EB]/70 text-sm sm:text-base uppercase tracking-widest text-center">
+        <p className="text-[#C5A059] text-xs sm:text-sm uppercase tracking-[0.25em] font-medium mb-3">
           L'unione di due mondi
         </p>
+        <h2 className="font-anton text-[#F5F2EB] text-4xl sm:text-6xl uppercase tracking-tight">
+          Chi Siamo
+        </h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-[#F5F2EB]/90 leading-relaxed text-base md:text-lg text-left">
         <div className="bg-[#F5F2EB]/5 border border-[#F5F2EB]/10 backdrop-blur-md rounded-2xl p-6 sm:p-8">
           <h3 className="font-anton text-xl uppercase text-[#F5F2EB] mb-2">
-            La Filosofia Virgo
+            La Filosofia <span translate="no" className="notranslate">Virgo</span>
           </h3>
           <div className="w-12 h-[2px] bg-[#C5A059] mb-4" />
           <p className="mb-4">
-            Nata dall'idea di fondere l'arte digitale e la cucina tradizionale, Virgo non è solo una pizzeria, ma un laboratorio gastronomico e visivo. Crediamo che la pizza sia un'opera d'arte tridimensionale, dove ogni ingrediente rappresenta un colore e un volume nello spazio del piatto.
+            Nata dall'idea di fondere l'arte digitale e la cucina tradicional, <span translate="no" className="notranslate">Virgo</span> non è solo una pizzeria, ma un laboratorio gastronomico e visivo. Crediamo che la pizza sia un'opera d'arte tridimensionale, dove ogni ingrediente rappresenta un colore e un volume nello spazio del piatto.
           </p>
           <p>
             I nostri designer collaborano con i nostri pizzaioli per studiare geometrie di gusto e presentazioni che lasciano il segno, garantendo al contempo la massima digeribilità.
@@ -619,17 +650,17 @@ function App() {
   const PrenotaView = () => (
     <div className="max-w-2xl mx-auto w-full py-12 animate-fade-in px-6 text-[#F5F2EB] text-center flex flex-col items-center justify-center min-h-[60vh]">
       <div className="text-center mb-8">
-        <h2 className="font-anton text-[#F5F2EB] text-4xl sm:text-6xl uppercase tracking-tight mb-2">
-          Prenota un Tavolo
-        </h2>
-        <p className="text-[#F5F2EB]/70 text-sm sm:text-base uppercase tracking-widest text-center">
+        <p className="text-[#C5A059] text-xs sm:text-sm uppercase tracking-[0.25em] font-medium mb-3">
           Semplice & Veloce
         </p>
+        <h2 className="font-anton text-[#F5F2EB] text-4xl sm:text-6xl uppercase tracking-tight">
+          Prenota un Tavolo
+        </h2>
       </div>
 
       <div className="bg-[#F5F2EB]/5 border border-[#F5F2EB]/10 backdrop-blur-md rounded-3xl p-8 sm:p-10 w-full flex flex-col items-center gap-6 shadow-2xl">
         <p className="text-[#F5F2EB]/95 text-lg leading-relaxed mb-4 max-w-md">
-          Per riservare il tuo tavolo da <strong className="text-[#C5A059]">Virgo</strong>, contattaci direttamente tramite chiamata telefonica o inviaci un messaggio su WhatsApp.
+          Per riservare il tuo tavolo da <strong className="text-[#C5A059] notranslate" translate="no">Virgo</strong>, contattaci direttamente tramite chiamata telefonica o inviaci un messaggio su WhatsApp.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
@@ -762,7 +793,7 @@ function App() {
               >
                 {PIZZA_DEL_MESE[activeIndex].description}
               </p>
-              <div className="flex gap-4">
+              <div className="flex items-center gap-3">
                 <button
                   onClick={() => navigate('prev')}
                   className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 border-black flex items-center justify-center text-black bg-[#F5F2EB] hover:scale-108 hover:bg-[#F5F2EB]/80 active:scale-95 cursor-pointer focus:outline-none shadow-md"
@@ -779,6 +810,24 @@ function App() {
                 >
                   <ArrowRight size={26} strokeWidth={2.25} />
                 </button>
+                {/* Dot progress indicators */}
+                <div className="flex items-center gap-1.5 ml-1">
+                  {IMAGES.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => {
+                        if (isAnimating) return;
+                        setIsAnimating(true);
+                        setActiveIndex(i);
+                        setTimeout(() => setIsAnimating(false), 650);
+                      }}
+                      className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                        i === activeIndex ? 'w-5 bg-white' : 'w-1.5 bg-white/35 hover:bg-white/65'
+                      }`}
+                      aria-label={`Vai alla pizza ${i + 1}`}
+                    />
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -851,7 +900,7 @@ function App() {
           whiteSpace: currentPage === 'home' ? 'normal' : 'nowrap',
         }}
       >
-        {currentPage === 'home' ? 'Le Più richieste' : 'Virgo'}
+        {currentPage === 'home' ? 'Le Più richieste' : <span translate="no" className="notranslate">Virgo</span>}
       </div>
 
       {/* Header (Navbar) */}
@@ -1054,9 +1103,18 @@ const productLinks: LinkItem[] = [
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const [activePage, setActivePage] = useState(() =>
+    typeof window !== 'undefined' ? (window.location.hash.replace('#', '') || 'home') : 'home'
+  );
   const scrolled = useScroll(10);
   const [isSpinning, setIsSpinning] = useState(false);
   const logoRef = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    const handler = () => setActivePage(window.location.hash.replace('#', '') || 'home');
+    window.addEventListener('hashchange', handler);
+    return () => window.removeEventListener('hashchange', handler);
+  }, []);
 
   const handleLogoDoubleClick = () => {
     if (isSpinning) return;
@@ -1092,7 +1150,8 @@ export function Header() {
             window.location.hash = '';
           }}
           onDoubleClick={handleLogoDoubleClick}
-          className={`font-anton text-2xl uppercase tracking-wider text-[#C5A059] hover:opacity-80 transition-opacity select-none p-2 ${
+          translate="no"
+          className={`notranslate font-anton text-2xl uppercase tracking-wider text-[#C5A059] hover:opacity-80 transition-opacity select-none p-2 ${
             isSpinning ? 'animate-spin-3d' : ''
           }`}
         >
@@ -1127,9 +1186,14 @@ export function Header() {
           
           <button
             onClick={() => window.location.hash = 'chi-siamo'}
-            className="group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-semibold uppercase tracking-wide transition-colors hover:text-[#9E2A2B] text-[#F5F2EB] cursor-pointer"
+            className={`relative group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-semibold uppercase tracking-wide transition-colors cursor-pointer ${
+              activePage === 'chi-siamo' ? 'text-[#C5A059]' : 'text-[#F5F2EB] hover:text-[#C5A059]'
+            }`}
           >
             Chi Siamo
+            <span className={`absolute bottom-1 left-4 right-4 h-0.5 bg-[#C5A059] rounded-full transition-transform origin-left duration-200 ${
+              activePage === 'chi-siamo' ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+            }`} />
           </button>
           
           <Button onClick={() => window.location.hash = 'prenota'}>
