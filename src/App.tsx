@@ -22,8 +22,8 @@ const IMAGES = [
 
 const PIZZA_DEL_MESE = [
   {
-    name: 'Zucca e Zola',
-    description: "Crema di zucca mantovana, gorgonzola dolce DOP, speck croccante dell'Alto Adige e granella di pistacchi tostati. Una dolce e sapida armonia autunnale."
+    name: 'Margherita',
+    description: 'Pomodoro San Marzano DOP, mozzarella di bufala campana DOP, olio EVO, basilico.'
   },
   {
     name: 'Orto Verde',
@@ -40,7 +40,7 @@ const PIZZA_DEL_MESE = [
 ];
 
 const INGREDIENTS_DATA = [
-  // Zucca e Zola (represented by Margherita pizza.png image as per user description)
+  // Margherita (represented by Margherita pizza.png image as per user description)
   [
     { name: 'Pomodoro', src: '/pomodori.jpg', style: { top: '18%', left: '8%' }, mobileStyle: { top: '14%', left: '6%' }, animation: 'animate-float-slow' },
     { name: 'Mozzarella', src: '/mozzarella.jpg', style: { top: '56%', left: '10%' }, mobileStyle: { top: '30%', left: '5%' }, animation: 'animate-float-medium' },
@@ -1148,6 +1148,7 @@ export function Header() {
           onClick={(e) => {
             e.preventDefault();
             window.location.hash = '';
+            setOpen(false);
           }}
           onDoubleClick={handleLogoDoubleClick}
           translate="no"
